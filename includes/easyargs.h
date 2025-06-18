@@ -1,9 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// #define REQUIRED_ARG(type, name, default, label, description) ...
+// REQUIRED_ARG(type, name, label, description, parser)
+// label and description should be strings, e.g. "contrast" and "Contrast applied to image"
+#define REQUIRED_STRING_ARG(name, label, description) REQUIRED_ARG(char*, name, label, description, )
+#define REQUIRED_INT_ARG(name, label, description) REQUIRED_ARG(int, name, label, description, atoi)
+#define REQUIRED_SIZE_ARG(name, label, description) REQUIRED_ARG(size_t, name, label, description, atoi)
+#define REQUIRED_FLOAT_ARG(name, label, description) REQUIRED_ARG(float, name, label, description, atof)
+#define REQUIRED_DOUBLE_ARG(name, label, description) REQUIRED_ARG(double, name, label, description, atof)
+
 // #define OPTIONAL_ARG(type, name, default, flag, label, description, formatter, parser) ...
 // #define BOOLEAN_ARG(name, default, flag, description) ...
+
+// #define REQUIRED_STRING_ARG(name, label )
 
 // Count arguments
 #ifdef REQUIRED_ARGS
@@ -30,6 +39,7 @@ static const int BOOLEAN_ARG_COUNT = 0 BOOLEAN_ARGS;
 static const int BOOLEAN_ARG_COUNT = 0;
 #endif
 
+
 // Arg struct
 #define REQUIRED_ARG(type, name, ...) type name;
 #define OPTIONAL_ARG(type, name, ...) type name;
@@ -49,7 +59,53 @@ typedef struct {
 #undef OPTIONAL_ARG
 #undef BOOLEAN_ARG
 
-// Display help string
+
+// Parse arguments. Returns 0 if failed.
+int parse_args(int argc, char* argv[], args_t* args) {
+    
+    // Assume defaults
+    *args = (args_t) {
+        #define REQUIRED_ARG(type, name, label, description, ...) .name = (type) 0,
+        #define OPTIONAL_ARG(type, name, default, flag, label, description, formatter, parser) .name = default,
+        #define BOOLEAN_ARG(name, default, flag, description) .name = default,
+
+        #ifdef REQUIRED_ARGS
+        REQUIRED_ARGS
+        #endif
+
+        #ifdef OPTIONAL_ARGS
+        OPTIONAL_ARGS
+        #endif
+
+        #ifdef BOOLEAN_ARGS
+        BOOLEAN_ARGS
+        #endif
+
+        #undef REQUIRED_ARG
+        #undef OPTIONAL_ARG
+        #undef BOOLEAN_ARG
+    };
+
+    // If not enough required arguments
+    if (argc < 1 + REQUIRED_ARG_COUNT) {
+        fprintf(stderr, "Not all required arguments included.\n");
+        return 0;
+    }
+
+    // Get required arguments
+    #ifdef REQUIRED_ARGS
+    #define REQUIRED_ARG(type, name, label, description, parser) args->name = (type) parser(argv[i++]);
+    int i = 1;
+    REQUIRED_ARGS
+    #undef REQUIRED_ARG
+    #endif
+
+    return 1;
+}
+
+
+
+// Display help string, given command used to launch program, e.g., argv[0]
 void print_help(char* exec_alias) {
     // USAGE SECTION
     printf("USAGE:\n");
@@ -89,7 +145,7 @@ void print_help(char* exec_alias) {
     if (REQUIRED_ARG_COUNT > 0) {
         printf("ARGUMENTS:\n");
     
-        #define REQUIRED_ARG(type, name, default, label, description) "\t<" label ">\t\t" description "\n"
+        #define REQUIRED_ARG(type, name, label, description, ...) "\t<" label ">\t\t" description "\n"
         printf(REQUIRED_ARGS);
         #undef REQUIRED_ARG
 

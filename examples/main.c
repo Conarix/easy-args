@@ -1,7 +1,10 @@
 #define REQUIRED_ARGS \
-    REQUIRED_ARG(char*, input_path, NULL, "path/to/input", "Path to image input") \
-    REQUIRED_ARG(char*, output_path, NULL, "path/to/output", "Path to image output") \
-    REQUIRED_ARG(char*, contrast, NULL, "contrast", "Contrast applied to image") \
+    REQUIRED_STRING_ARG(input_path, "path/to/input", "Path to image input") \
+    REQUIRED_FLOAT_ARG(contrast, "contrast", "Contrast applied to image") \
+    REQUIRED_SIZE_ARG(index, "index", "The index of the frame") \
+    // REQUIRED_ARG(char*, input_path, "path/to/input", "Path to image input", ) \
+    REQUIRED_ARG(char*, output_path, "path/to/output", "Path to image output", ) \
+    REQUIRED_ARG(double, contrast, "contrast", "Contrast applied to image", atof) \
     // REQUIRED_ARG(char*, b, NULL, "path/to/output", "Path to image output") \
 
 #define OPTIONAL_ARGS \
@@ -15,5 +18,11 @@
 
 
 int main(int argc, char* argv[]) {
-    print_help(argv[0]);
+    // print_help(argv[0]);
+
+    args_t args;
+    parse_args(argc, argv, &args);
+
+    printf("%s, %zu\n", args.input_path, args.index); //, args.output_path, args.contrast);
+    // printf("%s, %s, %f\n", args.input_path, args.output_path, args.contrast);
 }
