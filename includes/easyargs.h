@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
 
 // REQUIRED_ARG(type, name, label, description, parser)
 // label and description should be strings, e.g. "contrast" and "Contrast applied to image"
@@ -9,7 +11,7 @@
 #define REQUIRED_FLOAT_ARG(name, label, description) REQUIRED_ARG(float, name, label, description, atof)
 #define REQUIRED_DOUBLE_ARG(name, label, description) REQUIRED_ARG(double, name, label, description, atof)
 
-// #define OPTIONAL_ARG(type, name, default, flag, label, description, formatter, parser) ...
+// OPTIONAL_ARG(type, name, default, flag, label, description, formatter, parser) ...
 // #define BOOLEAN_ARG(name, default, flag, description) ...
 
 // #define REQUIRED_STRING_ARG(name, label )
@@ -87,6 +89,7 @@ args_t make_default_args() {
     return args;
 }
 
+
 // Parse arguments. Returns 0 if failed.
 int parse_args(int argc, char* argv[], args_t* args) {
     
@@ -104,9 +107,34 @@ int parse_args(int argc, char* argv[], args_t* args) {
     #undef REQUIRED_ARG
     #endif
 
+    // Get optional and boolean arguments
+    #define OPTIONAL_ARG(type, name, default, flag, label, description, formatter, parser) \
+    if (!strcmp(argv[i], flag)) { \
+        args->name = (type) parser(argv[++i]); \
+        continue; \
+    }
+
+    #define BOOLEAN_ARG(name, default, flag, description) \
+    if (!strcmp(argv[i], flag)) { \
+        args->name = !default; \
+        continue; \
+    } 
+
+    for (int i = 1 + REQUIRED_ARG_COUNT; i < argc; i++) {
+        #ifdef OPTIONAL_ARGS
+        OPTIONAL_ARGS
+        #endif
+
+        #ifdef BOOLEAN_ARGS
+        BOOLEAN_ARGS
+        #endif
+    }
+
+    #undef OPTIONAL_ARG
+    #undef BOOLEAN_ARG
+
     return 1;
 }
-
 
 
 // Display help string, given command used to launch program, e.g., argv[0]
