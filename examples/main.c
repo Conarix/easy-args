@@ -20,9 +20,9 @@
 int main(int argc, char* argv[]) {
     // print_help(argv[0]);
 
-    args_t args;
+    args_t args = make_default_args();
     parse_args(argc, argv, &args);
 
-    printf("%s, %zu\n", args.input_path, args.index); //, args.output_path, args.contrast);
+    printf("%s, %zu\n", args.input_path, args.width); //, args.output_path, args.contrast);
     // printf("%s, %s, %f\n", args.input_path, args.output_path, args.contrast);
 }

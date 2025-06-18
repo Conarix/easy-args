@@ -60,11 +60,9 @@ typedef struct {
 #undef BOOLEAN_ARG
 
 
-// Parse arguments. Returns 0 if failed.
-int parse_args(int argc, char* argv[], args_t* args) {
-    
-    // Assume defaults
-    *args = (args_t) {
+// Builds an args_t struct with assigned default values
+args_t make_default_args() {
+    args_t args = {
         #define REQUIRED_ARG(type, name, label, description, ...) .name = (type) 0,
         #define OPTIONAL_ARG(type, name, default, flag, label, description, formatter, parser) .name = default,
         #define BOOLEAN_ARG(name, default, flag, description) .name = default,
@@ -86,6 +84,12 @@ int parse_args(int argc, char* argv[], args_t* args) {
         #undef BOOLEAN_ARG
     };
 
+    return args;
+}
+
+// Parse arguments. Returns 0 if failed.
+int parse_args(int argc, char* argv[], args_t* args) {
+    
     // If not enough required arguments
     if (argc < 1 + REQUIRED_ARG_COUNT) {
         fprintf(stderr, "Not all required arguments included.\n");
