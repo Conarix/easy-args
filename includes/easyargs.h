@@ -195,8 +195,8 @@ void print_help(char* exec_alias) {
     printf("OPTIONS:\n");
 
     #ifdef OPTIONAL_ARGS
-    #define OPTIONAL_ARG(type, name, default, flag, label, description, formatter, parser) "\t" flag " <" label ">\t\t" description "\n"
-    printf(OPTIONAL_ARGS);
+    #define OPTIONAL_ARG(type, name, default, flag, label, description, formatter, parser) printf("\t" flag " <" label ">\t\t" description " (default: " formatter ")\n", default);
+    OPTIONAL_ARGS
     #undef OPTIONAL_ARG
     #endif
 
