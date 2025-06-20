@@ -8,8 +8,8 @@
     // REQUIRED_ARG(char*, b, NULL, "path/to/output", "Path to image output") \
 
 #define OPTIONAL_ARGS \
-    OPTIONAL_ARG(size_t, width, 64, "-w", "width", "Width of image", %d, (size_t) atoi) \
-    OPTIONAL_ARG(size_t, height, 64, "-h", "height", "Height of image", %d, (size_t) atoi)
+    OPTIONAL_ARG(size_t, width, 64, "-w", "width", "Width of image", "%d", (size_t) atoi) \
+    OPTIONAL_ARG(size_t, height, 64, "-h", "height", "Height of image", "%d", (size_t) atoi)
 
 #define BOOLEAN_ARGS \
     BOOLEAN_ARG(grayscale, 1, "-bw", "Use black and white")
@@ -18,7 +18,7 @@
 
 
 int main(int argc, char* argv[]) {
-    // print_help(argv[0]);
+    print_help(argv[0]);
 
     args_t args = make_default_args();
     parse_args(argc, argv, &args);
