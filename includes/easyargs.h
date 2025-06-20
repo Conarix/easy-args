@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <stdlib.h>  // used for parsing (atoi, atof)
+#include <string.h>  // used for strcmp
 
 
 // REQUIRED_ARG(type, name, label, description, parser)
@@ -11,8 +11,14 @@
 #define REQUIRED_FLOAT_ARG(name, label, description) REQUIRED_ARG(float, name, label, description, atof)
 #define REQUIRED_DOUBLE_ARG(name, label, description) REQUIRED_ARG(double, name, label, description, atof)
 
-// OPTIONAL_ARG(type, name, default, flag, label, description, formatter, parser) ...
-// #define BOOLEAN_ARG(name, default, flag, description) ...
+// OPTIONAL_ARG(type, name, default, flag, label, description, formatter, parser)
+#define OPTIONAL_STRING_ARG(name, default, flag, label, description) OPTIONAL_ARG(char*, name, default, flag, label, description, "%s", )
+#define OPTIONAL_INT_ARG(name, default, flag, label, description) OPTIONAL_ARG(int, name, default, flag, label, description, "%d", atoi)
+#define OPTIONAL_SIZE_ARG(name, default, flag, label, description) OPTIONAL_ARG(size_t, name, default, flag, label, description, "%zu", atoi)
+#define OPTIONAL_FLOAT_ARG(name, default, flag, label, description, precision) OPTIONAL_ARG(float, name, default, flag, label, description, "%." #precision "g", atof)
+#define OPTIONAL_DOUBLE_ARG(name, default, flag, label, description, precision) OPTIONAL_ARG(double, name, default, flag, label, description, "%." #precision "g", atof)
+
+// BOOLEAN_ARG(name, default, flag, description)
 
 // #define REQUIRED_STRING_ARG(name, label )
 
