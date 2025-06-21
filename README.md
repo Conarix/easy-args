@@ -145,4 +145,4 @@ if (!parse_args(argc, argv, &args)) {
 2. Place it in your project directory or include path
 3. Include it in your source files: `#include "easyargs.h"`
 
-No compilation or linking required -- it's header-only!
+No compilation or linking required &mdash; it's header-only!
