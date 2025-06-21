@@ -1,3 +1,6 @@
+#ifndef EASYARGS_H
+#define EASYARGS_H
+
 #include <stdio.h>
 #include <stdlib.h>  // used for parsing (atoi, atof)
 #include <string.h>  // used for strcmp
@@ -229,3 +232,5 @@ void print_help(char* exec_alias) {
 
     #endif
 }
+
+#endif
