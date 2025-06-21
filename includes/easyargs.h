@@ -1,6 +1,14 @@
 #ifndef EASYARGS_H
 #define EASYARGS_H
 
+/*
+    EasyArgs: A simple, single-header argument parser for C
+    Version: June 21, 2025
+    Author: Xander Gouws
+    
+    See README.md for documentation and examples.
+*/
+
 #include <stdio.h>
 #include <stdlib.h>  // used for parsing (atoi, atof)
 #include <string.h>  // used for strcmp
