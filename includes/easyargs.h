@@ -173,7 +173,7 @@ void print_help(char* exec_alias) {
 
     #ifdef REQUIRED_ARGS
     if (REQUIRED_ARG_COUNT > 0 && REQUIRED_ARG_COUNT <= 3) {
-        #define REQUIRED_ARG(type, name, default, label, ...) "<" label "> "
+        #define REQUIRED_ARG(type, name, label, description, ...) "<" label "> "
         printf(REQUIRED_ARGS);
         #undef REQUIRED_ARG
     } else {
