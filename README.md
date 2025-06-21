@@ -2,6 +2,8 @@
 
 A simple, single-header argument parser for C that eliminates boilerplate and code duplication.
 
+![Cover photo. Easy Args: A simple, single-header argument parser for C](./coverphoto.jpg)
+
 ## Features
 
 - **Single header file:** Just include `easyargs.h` and you're good to go
