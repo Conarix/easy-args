@@ -6,23 +6,43 @@
 // REQUIRED_ARG(type, name, label, description, parser)
 // label and description should be strings, e.g. "contrast" and "Contrast applied to image"
 #define REQUIRED_STRING_ARG(name, label, description) REQUIRED_ARG(char*, name, label, description, )
+#define REQUIRED_CHAR_ARG(name, label, description) REQUIRED_ARG(char, name, label, description, )
 #define REQUIRED_INT_ARG(name, label, description) REQUIRED_ARG(int, name, label, description, atoi)
-#define REQUIRED_SIZE_ARG(name, label, description) REQUIRED_ARG(size_t, name, label, description, atoi)
+#define REQUIRED_UINT_ARG(name, label, description) REQUIRED_ARG(unsigned int, name, label, description, atoi)
+#define REQUIRED_LONG_ARG(name, label, description) REQUIRED_ARG(long, name, label, description, atol)
+#define REQUIRED_ULONG_ARG(name, label, description) REQUIRED_ARG(unsigned long, name, label, description, parse_ul)
+#define REQUIRED_LONG_LONG_ARG(name, label, description) REQUIRED_ARG(long long, name, label, description, atoll)
+#define REQUIRED_ULONG_LONG_ARG(name, label, description) REQUIRED_ARG(unsigned long long, name, label, description, parse_ull)
+#define REQUIRED_SIZE_ARG(name, label, description) REQUIRED_ARG(size_t, name, label, description, parse_ull)
 #define REQUIRED_FLOAT_ARG(name, label, description) REQUIRED_ARG(float, name, label, description, atof)
 #define REQUIRED_DOUBLE_ARG(name, label, description) REQUIRED_ARG(double, name, label, description, atof)
 
 // OPTIONAL_ARG(type, name, default, flag, label, description, formatter, parser)
 #define OPTIONAL_STRING_ARG(name, default, flag, label, description) OPTIONAL_ARG(char*, name, default, flag, label, description, "%s", )
+#define OPTIONAL_CHAR_ARG(name, default, flag, label, description) OPTIONAL_ARG(char, name, default, flag, label, description, "%c", )
 #define OPTIONAL_INT_ARG(name, default, flag, label, description) OPTIONAL_ARG(int, name, default, flag, label, description, "%d", atoi)
-#define OPTIONAL_SIZE_ARG(name, default, flag, label, description) OPTIONAL_ARG(size_t, name, default, flag, label, description, "%zu", atoi)
+#define OPTIONAL_UINT_ARG(name, default, flag, label, description) OPTIONAL_ARG(unsigned int, name, default, flag, label, description, "%u", atoi)
+#define OPTIONAL_LONG_ARG(name, default, flag, label, description) OPTIONAL_ARG(long, name, default, flag, label, description, "%ld", atol)
+#define OPTIONAL_ULONG_ARG(name, default, flag, label, description) OPTIONAL_ARG(unsigned long, name, default, flag, label, description, "%lu", parse_ul)
+#define OPTIONAL_LONG_LONG_ARG(name, default, flag, label, description) OPTIONAL_ARG(long long, name, default, flag, label, description, "%lld", atoll)
+#define OPTIONAL_ULONG_LONG_ARG(name, default, flag, label, description) OPTIONAL_ARG(unsigned long long, name, default, flag, label, description, "%llu", parse_ull)
+#define OPTIONAL_SIZE_ARG(name, default, flag, label, description) OPTIONAL_ARG(size_t, name, default, flag, label, description, "%zu", parse_ull)
 #define OPTIONAL_FLOAT_ARG(name, default, flag, label, description, precision) OPTIONAL_ARG(float, name, default, flag, label, description, "%." #precision "g", atof)
 #define OPTIONAL_DOUBLE_ARG(name, default, flag, label, description, precision) OPTIONAL_ARG(double, name, default, flag, label, description, "%." #precision "g", atof)
 
 // BOOLEAN_ARG(name, default, flag, description)
 
-// #define REQUIRED_STRING_ARG(name, label )
+// PARSERS
+unsigned long parse_ul(const char* text) {
+    return strtoul(text, NULL, 10);
+}
 
-// Count arguments
+unsigned long parse_ull(const char* text) {
+    return strtoull(text, NULL, 10);
+}
+
+
+// COUNT ARGUMENTS
 #ifdef REQUIRED_ARGS
 #define REQUIRED_ARG(...) + 1
 static const int REQUIRED_ARG_COUNT = 0 REQUIRED_ARGS;
@@ -48,10 +68,11 @@ static const int BOOLEAN_ARG_COUNT = 0;
 #endif
 
 
-// Arg struct
+// ARG_T STRUCT
 #define REQUIRED_ARG(type, name, ...) type name;
 #define OPTIONAL_ARG(type, name, ...) type name;
 #define BOOLEAN_ARG(name, ...) _Bool name;
+// Stores argument values
 typedef struct {
     #ifdef REQUIRED_ARGS
     REQUIRED_ARGS
@@ -68,7 +89,7 @@ typedef struct {
 #undef BOOLEAN_ARG
 
 
-// Builds an args_t struct with assigned default values
+// Build an args_t struct with assigned default values
 args_t make_default_args() {
     args_t args = {
         #define REQUIRED_ARG(type, name, label, description, ...) .name = (type) 0,
