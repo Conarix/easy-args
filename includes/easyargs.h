@@ -45,11 +45,11 @@
 
 
 // PARSERS
-unsigned long parse_ul(const char* text) {
+static inline unsigned long parse_ul(const char* text) {
     return strtoul(text, NULL, 10);
 }
 
-unsigned long long parse_ull(const char* text) {
+static inline unsigned long long parse_ull(const char* text) {
     return strtoull(text, NULL, 10);
 }
 
@@ -102,7 +102,7 @@ typedef struct {
 
 
 // Build an args_t struct with assigned default values
-args_t make_default_args() {
+static inline args_t make_default_args() {
     args_t args = {
         #define REQUIRED_ARG(type, name, label, description, ...) .name = (type) 0,
         #define OPTIONAL_ARG(type, name, default, flag, label, description, formatter, parser) .name = default,
@@ -130,7 +130,7 @@ args_t make_default_args() {
 
 
 // Parse arguments. Returns 0 if failed.
-int parse_args(int argc, char* argv[], args_t* args) {
+static inline int parse_args(int argc, char* argv[], args_t* args) {
     // If not enough required arguments
     if (argc < 1 + REQUIRED_ARG_COUNT) {
         fprintf(stderr, "Not all required arguments included.\n");
@@ -176,7 +176,7 @@ int parse_args(int argc, char* argv[], args_t* args) {
 
 
 // Display help string, given command used to launch program, e.g., argv[0]
-void print_help(char* exec_alias) {
+static inline void print_help(char* exec_alias) {
     // USAGE SECTION
     printf("USAGE:\n");
     printf("    %s ", exec_alias);
