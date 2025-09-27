@@ -22,7 +22,8 @@ int main(int argc, char* argv[]) {
     }
 
     printf("Configuration file: %s\n", args.config_file);
-    printf("Verbose: %s\n", args.verbose ? "on" : "off");
+    printf("Verbose: %s\n", args.verbose ? "On" : "Off");
+    printf("Using cache: %s\n", args.no_cache ? "No" : "Yes");
 
     return 0;
 }
