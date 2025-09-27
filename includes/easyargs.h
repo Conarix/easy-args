@@ -3,9 +3,9 @@
 
 /*
     EasyArgs: A simple, single-header argument parser for C
-    Version: June 21, 2025
+    Version: September 27, 2025
     Author: Xander Gouws
-    
+
     See README.md for documentation and examples.
 */
 
@@ -43,12 +43,13 @@
 
 // BOOLEAN_ARG(name, default, flag, description)
 
+
 // PARSERS
 unsigned long parse_ul(const char* text) {
     return strtoul(text, NULL, 10);
 }
 
-unsigned long parse_ull(const char* text) {
+unsigned long long parse_ull(const char* text) {
     return strtoull(text, NULL, 10);
 }
 
@@ -130,7 +131,6 @@ args_t make_default_args() {
 
 // Parse arguments. Returns 0 if failed.
 int parse_args(int argc, char* argv[], args_t* args) {
-    
     // If not enough required arguments
     if (argc < 1 + REQUIRED_ARG_COUNT) {
         fprintf(stderr, "Not all required arguments included.\n");
@@ -156,7 +156,7 @@ int parse_args(int argc, char* argv[], args_t* args) {
     if (!strcmp(argv[i], flag)) { \
         args->name = !default; \
         continue; \
-    } 
+    }
 
     for (int i = 1 + REQUIRED_ARG_COUNT; i < argc; i++) {
         #ifdef OPTIONAL_ARGS
@@ -179,8 +179,7 @@ int parse_args(int argc, char* argv[], args_t* args) {
 void print_help(char* exec_alias) {
     // USAGE SECTION
     printf("USAGE:\n");
-
-    printf("\t%s ", exec_alias);
+    printf("    %s ", exec_alias);
 
     #ifdef REQUIRED_ARGS
     if (REQUIRED_ARG_COUNT > 0 && REQUIRED_ARG_COUNT <= 3) {
@@ -210,31 +209,56 @@ void print_help(char* exec_alias) {
 
     printf("\n\n");
 
+    // Get maximum width of labels for spacing
+    int max_width = 0;
+    #ifdef REQUIRED_ARGS
+    #define REQUIRED_ARG(type, name, label, ...) \
+        { int len = strlen(label) + 2; if (len > max_width) max_width = len; }
+    REQUIRED_ARGS
+    #undef REQUIRED_ARG
+    #endif
+
+    #ifdef OPTIONAL_ARGS
+    #define OPTIONAL_ARG(type, name, default, flag, label, ...) \
+        { int len = strlen(flag) + 1 + strlen(label) + 2; if (len > max_width) max_width = len; }
+    OPTIONAL_ARGS
+    #undef OPTIONAL_ARG
+    #endif
+
+    #ifdef BOOLEAN_ARGS
+    #define BOOLEAN_ARG(name, default, flag, ...) \
+        { int len = strlen(flag); if (len > max_width) max_width = len; }
+    BOOLEAN_ARGS
+    #undef BOOLEAN_ARG
+    #endif
+
     // ARGUMENTS SECTION
     #ifdef REQUIRED_ARGS
-    if (REQUIRED_ARG_COUNT > 0) {
-        printf("ARGUMENTS:\n");
-    
-        #define REQUIRED_ARG(type, name, label, description, ...) "\t<" label ">\t\t" description "\n"
-        printf(REQUIRED_ARGS);
-        #undef REQUIRED_ARG
+    printf("ARGUMENTS:\n");
 
-        printf("\n");
-    }
+    #define REQUIRED_ARG(type, name, label, description, ...) \
+        printf("    <" label ">%*s    " description "\n", max_width - (int)strlen(label) - 2, "");
+    REQUIRED_ARGS
+    #undef REQUIRED_ARG
+
+    printf("\n");
     #endif
 
     #if defined(OPTIONAL_ARGS) || defined(BOOLEAN_ARGS)
     printf("OPTIONS:\n");
 
     #ifdef OPTIONAL_ARGS
-    #define OPTIONAL_ARG(type, name, default, flag, label, description, formatter, parser) printf("\t" flag " <" label ">\t\t" description " (default: " formatter ")\n", default);
+
+    #define OPTIONAL_ARG(type, name, default, flag, label, description, formatter, parser) \
+        printf("    " flag " <" label ">%*s    " description " (default: " formatter ")\n", max_width - (int)strlen(label) - (int)strlen(flag) - 3, "", default);
     OPTIONAL_ARGS
     #undef OPTIONAL_ARG
     #endif
 
     #ifdef BOOLEAN_ARGS
-    #define BOOLEAN_ARG(name, default, flag, description) "\t" flag "\t\t" description "\n"
-    printf(BOOLEAN_ARGS);
+    #define BOOLEAN_ARG(name, default, flag, description) \
+        printf("    " flag "%*s    " description "\n", max_width - (int)strlen(flag), "");
+    BOOLEAN_ARGS
     #undef BOOLEAN_ARG
     #endif
 
