@@ -30,7 +30,7 @@ Check out ./examples to see some use cases!
 
 // Define boolean flags
 #define BOOLEAN_ARGS \
-    BOOLEAN_ARG(help, 0, "-h", "Show help")
+    BOOLEAN_ARG(help, "-h", "Show help")
 ```
 
 ### 2. Include EasyArgs
@@ -55,7 +55,7 @@ int main(int argc, char* argv[]) {
     // Use your arguments
     printf("Processing %s -> %s\n", args.input_file, args.output_file);
     printf("Using %u threads\n", args.threads);
-    
+
     return 0;
 }
 ```
@@ -110,13 +110,13 @@ Optional arguments have flags and default values:
 
 ### Boolean Arguments
 
-Boolean flags toggle between true/false:
+Boolean flags toggle between true and false if present or missing, respectively:
 
 ```c
 #define BOOLEAN_ARGS \
-    BOOLEAN_ARG(verbose, 0, "-v", "Enable verbose output") \
-    BOOLEAN_ARG(quiet, 0, "-q", "Suppress all output") \
-    BOOLEAN_ARG(force, 0, "--force", "Force overwrite existing files")
+    BOOLEAN_ARG(verbose, "-v", "Enable verbose output") \
+    BOOLEAN_ARG(quiet, "-q", "Suppress all output") \
+    BOOLEAN_ARG(force, "--force", "Force overwrite existing files")
 ```
 
 ## Advanced Usage

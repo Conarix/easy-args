@@ -41,7 +41,7 @@
 #define OPTIONAL_FLOAT_ARG(name, default, flag, label, description, precision) OPTIONAL_ARG(float, name, default, flag, label, description, "%." #precision "g", atof)
 #define OPTIONAL_DOUBLE_ARG(name, default, flag, label, description, precision) OPTIONAL_ARG(double, name, default, flag, label, description, "%." #precision "g", atof)
 
-// BOOLEAN_ARG(name, default, flag, description)
+// BOOLEAN_ARG(name, flag, description)
 
 
 // PARSERS
@@ -106,7 +106,7 @@ args_t make_default_args() {
     args_t args = {
         #define REQUIRED_ARG(type, name, label, description, ...) .name = (type) 0,
         #define OPTIONAL_ARG(type, name, default, flag, label, description, formatter, parser) .name = default,
-        #define BOOLEAN_ARG(name, default, flag, description) .name = default,
+        #define BOOLEAN_ARG(name, flag, description) .name = 0,
 
         #ifdef REQUIRED_ARGS
         REQUIRED_ARGS
@@ -152,9 +152,9 @@ int parse_args(int argc, char* argv[], args_t* args) {
         continue; \
     }
 
-    #define BOOLEAN_ARG(name, default, flag, description) \
+    #define BOOLEAN_ARG(name, flag, description) \
     if (!strcmp(argv[i], flag)) { \
-        args->name = !default; \
+        args->name = 1; \
         continue; \
     }
 
@@ -199,7 +199,7 @@ void print_help(char* exec_alias) {
         #endif
 
         #ifdef BOOLEAN_ARGS
-        #define BOOLEAN_ARG(name, default, flag, ...) "[" flag "] "
+        #define BOOLEAN_ARG(name, flag, ...) "[" flag "] "
         printf(BOOLEAN_ARGS);
         #undef BOOLEAN_ARG
         #endif
@@ -226,7 +226,7 @@ void print_help(char* exec_alias) {
     #endif
 
     #ifdef BOOLEAN_ARGS
-    #define BOOLEAN_ARG(name, default, flag, ...) \
+    #define BOOLEAN_ARG(name, flag, ...) \
         { int len = strlen(flag); if (len > max_width) max_width = len; }
     BOOLEAN_ARGS
     #undef BOOLEAN_ARG
@@ -256,7 +256,7 @@ void print_help(char* exec_alias) {
     #endif
 
     #ifdef BOOLEAN_ARGS
-    #define BOOLEAN_ARG(name, default, flag, description) \
+    #define BOOLEAN_ARG(name, flag, description) \
         printf("    " flag "%*s    " description "\n", max_width - (int)strlen(flag), "");
     BOOLEAN_ARGS
     #undef BOOLEAN_ARG
