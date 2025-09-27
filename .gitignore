@@ -54,3 +54,4 @@ dkms.conf
 
 # Editor
 .vscode
+.DS_Store
