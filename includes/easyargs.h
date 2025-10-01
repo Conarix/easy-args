@@ -89,10 +89,10 @@ typedef struct {
     #ifdef REQUIRED_ARGS
     REQUIRED_ARGS
     #endif
-    #if defined(OPTIONAL_ARGS)
+    #ifdef OPTIONAL_ARGS
     OPTIONAL_ARGS
     #endif
-    #if defined(BOOLEAN_ARGS)
+    #ifdef BOOLEAN_ARGS
     BOOLEAN_ARGS
     #endif
 } args_t;
@@ -104,9 +104,9 @@ typedef struct {
 // Build an args_t struct with assigned default values
 static inline args_t make_default_args() {
     args_t args = {
-        #define REQUIRED_ARG(type, name, label, description, ...) .name = (type) 0,
-        #define OPTIONAL_ARG(type, name, default, flag, label, description, formatter, parser) .name = default,
-        #define BOOLEAN_ARG(name, flag, description) .name = 0,
+        #define REQUIRED_ARG(type, name, ...) .name = (type) 0,
+        #define OPTIONAL_ARG(type, name, default, ...) .name = default,
+        #define BOOLEAN_ARG(name, ...) .name = 0,
 
         #ifdef REQUIRED_ARGS
         REQUIRED_ARGS
@@ -183,7 +183,7 @@ static inline void print_help(char* exec_alias) {
 
     #ifdef REQUIRED_ARGS
     if (REQUIRED_ARG_COUNT > 0 && REQUIRED_ARG_COUNT <= 3) {
-        #define REQUIRED_ARG(type, name, label, description, ...) "<" label "> "
+        #define REQUIRED_ARG(type, name, label, ...) "<" label "> "
         printf(REQUIRED_ARGS);
         #undef REQUIRED_ARG
     } else {
@@ -249,7 +249,7 @@ static inline void print_help(char* exec_alias) {
 
     #ifdef OPTIONAL_ARGS
 
-    #define OPTIONAL_ARG(type, name, default, flag, label, description, formatter, parser) \
+    #define OPTIONAL_ARG(type, name, default, flag, label, description, formatter, ...) \
         printf("    " flag " <" label ">%*s    " description " (default: " formatter ")\n", max_width - (int)strlen(label) - (int)strlen(flag) - 3, "", default);
     OPTIONAL_ARGS
     #undef OPTIONAL_ARG
