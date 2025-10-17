@@ -17,7 +17,7 @@
 // REQUIRED_ARG(type, name, label, description, parser)
 // label and description should be strings, e.g. "contrast" and "Contrast applied to image"
 #define REQUIRED_STRING_ARG(name, label, description) REQUIRED_ARG(char*, name, label, description, )
-#define REQUIRED_CHAR_ARG(name, label, description) REQUIRED_ARG(char, name, label, description, )
+#define REQUIRED_CHAR_ARG(name, label, description) REQUIRED_ARG(char, name, label, description, parse_char)
 #define REQUIRED_INT_ARG(name, label, description) REQUIRED_ARG(int, name, label, description, atoi)
 #define REQUIRED_UINT_ARG(name, label, description) REQUIRED_ARG(unsigned int, name, label, description, atoi)
 #define REQUIRED_LONG_ARG(name, label, description) REQUIRED_ARG(long, name, label, description, atol)
@@ -30,7 +30,7 @@
 
 // OPTIONAL_ARG(type, name, default, flag, label, description, formatter, parser)
 #define OPTIONAL_STRING_ARG(name, default, flag, label, description) OPTIONAL_ARG(char*, name, default, flag, label, description, "%s", )
-#define OPTIONAL_CHAR_ARG(name, default, flag, label, description) OPTIONAL_ARG(char, name, default, flag, label, description, "%c", )
+#define OPTIONAL_CHAR_ARG(name, default, flag, label, description) OPTIONAL_ARG(char, name, default, flag, label, description, "%c", parse_char)
 #define OPTIONAL_INT_ARG(name, default, flag, label, description) OPTIONAL_ARG(int, name, default, flag, label, description, "%d", atoi)
 #define OPTIONAL_UINT_ARG(name, default, flag, label, description) OPTIONAL_ARG(unsigned int, name, default, flag, label, description, "%u", atoi)
 #define OPTIONAL_LONG_ARG(name, default, flag, label, description) OPTIONAL_ARG(long, name, default, flag, label, description, "%ld", atol)
@@ -45,6 +45,10 @@
 
 
 // PARSERS
+static inline char parse_char(const char* text) {
+    return text[0];
+}
+
 static inline unsigned long parse_ul(const char* text) {
     return strtoul(text, NULL, 10);
 }
@@ -131,6 +135,11 @@ static inline args_t make_default_args() {
 
 // Parse arguments. Returns 0 if failed.
 static inline int parse_args(int argc, char* argv[], args_t* args) {
+    if (!argc || !argv) {
+        fprintf(stderr, "Internal error: null args or argv.\n");
+        return 0;
+    }
+
     // If not enough required arguments
     if (argc < 1 + REQUIRED_ARG_COUNT) {
         fprintf(stderr, "Not all required arguments included.\n");
@@ -148,6 +157,10 @@ static inline int parse_args(int argc, char* argv[], args_t* args) {
     // Get optional and boolean arguments
     #define OPTIONAL_ARG(type, name, default, flag, label, description, formatter, parser) \
     if (!strcmp(argv[i], flag)) { \
+        if (i + 1 >= argc) { \
+            fprintf(stderr, "Error: option '%s' requires a value.\n", flag); \
+            return 0; \
+        } \
         args->name = (type) parser(argv[++i]); \
         continue; \
     }
@@ -166,6 +179,8 @@ static inline int parse_args(int argc, char* argv[], args_t* args) {
         #ifdef BOOLEAN_ARGS
         BOOLEAN_ARGS
         #endif
+
+        fprintf(stderr, "Warning: Ignoring invalid argument '%s'\n", argv[i]);
     }
 
     #undef OPTIONAL_ARG
@@ -211,6 +226,7 @@ static inline void print_help(char* exec_alias) {
 
     // Get maximum width of labels for spacing
     int max_width = 0;
+    (void) max_width; // suppress unused variable warning
     #ifdef REQUIRED_ARGS
     #define REQUIRED_ARG(type, name, label, ...) \
         { int len = strlen(label) + 2; if (len > max_width) max_width = len; }
