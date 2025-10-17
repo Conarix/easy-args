@@ -135,10 +135,9 @@ static inline args_t make_default_args() {
 
 // Parse arguments. Returns 0 if failed.
 static inline int parse_args(int argc, char* argv[], args_t* args) {
-    if (!argc || !argv)
-    {
-        fprintf(stderr, "Internal error: null args or argv.\n"); 
-        return 0; 
+    if (!argc || !argv) {
+        fprintf(stderr, "Internal error: null args or argv.\n");
+        return 0;
     }
 
     // If not enough required arguments
