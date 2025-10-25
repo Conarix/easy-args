@@ -13,7 +13,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>  // used for parsing (atoi, atof)
-#include <string.h>  // used for strcmp
 
 
 // REQUIRED_ARG(type, name, label, description, parser)
@@ -59,6 +58,39 @@ static inline unsigned long long parse_ull(const char* text) {
     return strtoull(text, NULL, 10);
 }
 
+static inline int easyargs_strlen(char *str) {
+    int len = 0;
+    int i = 0;
+    char curr_char = str[i];
+
+    while (curr_char != '\0') {
+        len++;
+        curr_char = str[++i];
+    }
+
+    return len;
+}
+
+// Check if two string are equal
+static inline int easyargs_strcmp(char *str1, char *str2) {
+    int str1_len = easyargs_strlen(str1);
+    int str2_len = easyargs_strlen(str2);
+
+    if (str1_len != str2_len) {
+        return 0;
+    }
+
+    for (int i=0; i<str1_len; i++) {
+        char str1_char = str1[i];
+        char str2_char = str2[i];
+
+        if (str1_char != str2_char) {
+            return 0;
+        }
+    }
+
+    return 1;
+}
 
 // COUNT ARGUMENTS
 #ifdef REQUIRED_ARGS
@@ -158,7 +190,7 @@ static inline int parse_args(int argc, char* argv[], args_t* args) {
 
     // Get optional and boolean arguments
     #define OPTIONAL_ARG(type, name, default, flag, label, description, formatter, parser) \
-    if (!strcmp(argv[i], flag)) { \
+    if (easyargs_strcmp(argv[i], flag)) { \
         if (i + 1 >= argc) { \
             fprintf(stderr, "Error: option '%s' requires a value.\n", flag); \
             return 0; \
@@ -168,7 +200,7 @@ static inline int parse_args(int argc, char* argv[], args_t* args) {
     }
 
     #define BOOLEAN_ARG(name, flag, description) \
-    if (!strcmp(argv[i], flag)) { \
+    if (easyargs_strcmp(argv[i], flag)) { \
         args->name = 1; \
         continue; \
     }
@@ -231,21 +263,21 @@ static inline void print_help(char* exec_alias) {
     (void) max_width; // suppress unused variable warning
     #ifdef REQUIRED_ARGS
     #define REQUIRED_ARG(type, name, label, ...) \
-        { int len = strlen(label) + 2; if (len > max_width) max_width = len; }
+        { int len = easyargs_strlen(label) + 2; if (len > max_width) max_width = len; }
     REQUIRED_ARGS
     #undef REQUIRED_ARG
     #endif
 
     #ifdef OPTIONAL_ARGS
     #define OPTIONAL_ARG(type, name, default, flag, label, ...) \
-        { int len = strlen(flag) + 1 + strlen(label) + 2; if (len > max_width) max_width = len; }
+        { int len = easyargs_strlen(flag) + 1 + easyargs_strlen(label) + 2; if (len > max_width) max_width = len; }
     OPTIONAL_ARGS
     #undef OPTIONAL_ARG
     #endif
 
     #ifdef BOOLEAN_ARGS
     #define BOOLEAN_ARG(name, flag, ...) \
-        { int len = strlen(flag); if (len > max_width) max_width = len; }
+        { int len = easyargs_strlen(flag); if (len > max_width) max_width = len; }
     BOOLEAN_ARGS
     #undef BOOLEAN_ARG
     #endif
@@ -255,7 +287,7 @@ static inline void print_help(char* exec_alias) {
     printf("ARGUMENTS:\n");
 
     #define REQUIRED_ARG(type, name, label, description, ...) \
-        printf("    <" label ">%*s    " description "\n", max_width - (int)strlen(label) - 2, "");
+        printf("    <" label ">%*s    " description "\n", max_width - (int)easyargs_strlen(label) - 2, "");
     REQUIRED_ARGS
     #undef REQUIRED_ARG
 
@@ -268,14 +300,14 @@ static inline void print_help(char* exec_alias) {
     #ifdef OPTIONAL_ARGS
 
     #define OPTIONAL_ARG(type, name, default, flag, label, description, formatter, ...) \
-        printf("    " flag " <" label ">%*s    " description " (default: " formatter ")\n", max_width - (int)strlen(label) - (int)strlen(flag) - 3, "", default);
+        printf("    " flag " <" label ">%*s    " description " (default: " formatter ")\n", max_width - (int)easyargs_strlen(label) - (int)easyargs_strlen(flag) - 3, "", default);
     OPTIONAL_ARGS
     #undef OPTIONAL_ARG
     #endif
 
     #ifdef BOOLEAN_ARGS
     #define BOOLEAN_ARG(name, flag, description) \
-        printf("    " flag "%*s    " description "\n", max_width - (int)strlen(flag), "");
+        printf("    " flag "%*s    " description "\n", max_width - (int)easyargs_strlen(flag), "");
     BOOLEAN_ARGS
     #undef BOOLEAN_ARG
     #endif

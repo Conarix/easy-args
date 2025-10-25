@@ -2,7 +2,7 @@
 
 A simple, single-header argument parser for C that eliminates boilerplate and code duplication.
 
-![Cover photo. Easy Args: A simple, single-header argument parser for C](./coverphoto.jpg)
+This is based on the easy-args library built by gouwsxander [GitHub Repo](https://github.com/gouwsxander/easy-args)
 
 ## Features
 
