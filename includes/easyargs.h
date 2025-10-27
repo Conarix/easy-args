@@ -15,34 +15,37 @@
 #include <stdlib.h>  // used for parsing (atoi, atof)
 
 
-// REQUIRED_ARG(type, name, label, description, parser)
+// REQUIRED_ARG(type, name, label, description, parser, index)
 // label and description should be strings, e.g. "contrast" and "Contrast applied to image"
-#define REQUIRED_STRING_ARG(name, label, description) REQUIRED_ARG(char*, name, label, description, )
-#define REQUIRED_CHAR_ARG(name, label, description) REQUIRED_ARG(char, name, label, description, parse_char)
-#define REQUIRED_INT_ARG(name, label, description) REQUIRED_ARG(int, name, label, description, atoi)
-#define REQUIRED_UINT_ARG(name, label, description) REQUIRED_ARG(unsigned int, name, label, description, atoi)
-#define REQUIRED_LONG_ARG(name, label, description) REQUIRED_ARG(long, name, label, description, atol)
-#define REQUIRED_ULONG_ARG(name, label, description) REQUIRED_ARG(unsigned long, name, label, description, parse_ul)
-#define REQUIRED_LONG_LONG_ARG(name, label, description) REQUIRED_ARG(long long, name, label, description, atoll)
-#define REQUIRED_ULONG_LONG_ARG(name, label, description) REQUIRED_ARG(unsigned long long, name, label, description, parse_ull)
-#define REQUIRED_SIZE_ARG(name, label, description) REQUIRED_ARG(size_t, name, label, description, parse_ull)
-#define REQUIRED_FLOAT_ARG(name, label, description) REQUIRED_ARG(float, name, label, description, atof)
-#define REQUIRED_DOUBLE_ARG(name, label, description) REQUIRED_ARG(double, name, label, description, atof)
+#define REQUIRED_STRING_ARG(name, label, description) REQUIRED_ARG(char*, name, label, description, , __COUNTER__)
+#define REQUIRED_CHAR_ARG(name, label, description) REQUIRED_ARG(char, name, label, description, parse_char, __COUNTER__)
+#define REQUIRED_INT_ARG(name, label, description) REQUIRED_ARG(int, name, label, description, atoi, __COUNTER__)
+#define REQUIRED_UINT_ARG(name, label, description) REQUIRED_ARG(unsigned int, name, label, description, atoi, __COUNTER__)
+#define REQUIRED_LONG_ARG(name, label, description) REQUIRED_ARG(long, name, label, description, atol, __COUNTER__)
+#define REQUIRED_ULONG_ARG(name, label, description) REQUIRED_ARG(unsigned long, name, label, description, parse_ul, __COUNTER__)
+#define REQUIRED_LONG_LONG_ARG(name, label, description) REQUIRED_ARG(long long, name, label, description, atoll, __COUNTER__)
+#define REQUIRED_ULONG_LONG_ARG(name, label, description) REQUIRED_ARG(unsigned long long, name, label, description, parse_ull, __COUNTER__)
+#define REQUIRED_SIZE_ARG(name, label, description) REQUIRED_ARG(size_t, name, label, description, parse_ull, __COUNTER__)
+#define REQUIRED_FLOAT_ARG(name, label, description) REQUIRED_ARG(float, name, label, description, atof, __COUNTER__)
+#define REQUIRED_DOUBLE_ARG(name, label, description) REQUIRED_ARG(double, name, label, description, atof, __COUNTER__)
 
 // OPTIONAL_ARG(type, name, default, flag, label, description, formatter, parser)
-#define OPTIONAL_STRING_ARG(name, default, flag, label, description) OPTIONAL_ARG(char*, name, default, flag, label, description, "%s", )
-#define OPTIONAL_CHAR_ARG(name, default, flag, label, description) OPTIONAL_ARG(char, name, default, flag, label, description, "%c", parse_char)
-#define OPTIONAL_INT_ARG(name, default, flag, label, description) OPTIONAL_ARG(int, name, default, flag, label, description, "%d", atoi)
-#define OPTIONAL_UINT_ARG(name, default, flag, label, description) OPTIONAL_ARG(unsigned int, name, default, flag, label, description, "%u", atoi)
-#define OPTIONAL_LONG_ARG(name, default, flag, label, description) OPTIONAL_ARG(long, name, default, flag, label, description, "%ld", atol)
-#define OPTIONAL_ULONG_ARG(name, default, flag, label, description) OPTIONAL_ARG(unsigned long, name, default, flag, label, description, "%lu", parse_ul)
-#define OPTIONAL_LONG_LONG_ARG(name, default, flag, label, description) OPTIONAL_ARG(long long, name, default, flag, label, description, "%lld", atoll)
-#define OPTIONAL_ULONG_LONG_ARG(name, default, flag, label, description) OPTIONAL_ARG(unsigned long long, name, default, flag, label, description, "%llu", parse_ull)
-#define OPTIONAL_SIZE_ARG(name, default, flag, label, description) OPTIONAL_ARG(size_t, name, default, flag, label, description, "%zu", parse_ull)
-#define OPTIONAL_FLOAT_ARG(name, default, flag, label, description, precision) OPTIONAL_ARG(float, name, default, flag, label, description, "%." #precision "g", atof)
-#define OPTIONAL_DOUBLE_ARG(name, default, flag, label, description, precision) OPTIONAL_ARG(double, name, default, flag, label, description, "%." #precision "g", atof)
+#define OPTIONAL_ARG_FLAG_PREFIX "--"
+
+#define OPTIONAL_STRING_ARG(name, default, flag, label, description) OPTIONAL_ARG(char*, name, default, OPTIONAL_ARG_FLAG_PREFIX flag, label, description, "%s", )
+#define OPTIONAL_CHAR_ARG(name, default, flag, label, description) OPTIONAL_ARG(char, name, default, OPTIONAL_ARG_FLAG_PREFIX flag, label, description, "%c", parse_char)
+#define OPTIONAL_INT_ARG(name, default, flag, label, description) OPTIONAL_ARG(int, name, default, OPTIONAL_ARG_FLAG_PREFIX flag, label, description, "%d", atoi)
+#define OPTIONAL_UINT_ARG(name, default, flag, label, description) OPTIONAL_ARG(unsigned int, name, default, OPTIONAL_ARG_FLAG_PREFIX flag, label, description, "%u", atoi)
+#define OPTIONAL_LONG_ARG(name, default, flag, label, description) OPTIONAL_ARG(long, name, default, OPTIONAL_ARG_FLAG_PREFIX flag, label, description, "%ld", atol)
+#define OPTIONAL_ULONG_ARG(name, default, flag, label, description) OPTIONAL_ARG(unsigned long, name, default, OPTIONAL_ARG_FLAG_PREFIX flag, label, description, "%lu", parse_ul)
+#define OPTIONAL_LONG_LONG_ARG(name, default, flag, label, description) OPTIONAL_ARG(long long, name, default, OPTIONAL_ARG_FLAG_PREFIX flag, label, description, "%lld", atoll)
+#define OPTIONAL_ULONG_LONG_ARG(name, default, flag, label, description) OPTIONAL_ARG(unsigned long long, name, default, OPTIONAL_ARG_FLAG_PREFIX flag, label, description, "%llu", parse_ull)
+#define OPTIONAL_SIZE_ARG(name, default, flag, label, description) OPTIONAL_ARG(size_t, name, default, OPTIONAL_ARG_FLAG_PREFIX flag, label, description, "%zu", parse_ull)
+#define OPTIONAL_FLOAT_ARG(name, default, flag, label, description, precision) OPTIONAL_ARG(float, name, default, OPTIONAL_ARG_FLAG_PREFIX flag, label, description, "%." #precision "g", atof)
+#define OPTIONAL_DOUBLE_ARG(name, default, flag, label, description, precision) OPTIONAL_ARG(double, name, default, OPTIONAL_ARG_FLAG_PREFIX flag, label, description, "%." #precision "g", atof)
 
 // BOOLEAN_ARG(name, flag, description)
+#define BOOLEAN_ARG_FLAG_PREFIX "-"
 
 
 // PARSERS
@@ -92,6 +95,16 @@ static inline int easyargs_strcmp(char *str1, char *str2) {
     return 1;
 }
 
+static inline int easyargs_str_starts_with(char *haystack, char *needle) {
+    for (int i=0; needle[i] != '\0'; i++) {
+        if (haystack[i] == '\0' || haystack[i] != needle[i]) {
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
 // COUNT ARGUMENTS
 #ifdef REQUIRED_ARGS
 #define REQUIRED_ARG(...) + 1
@@ -121,7 +134,7 @@ static const int BOOLEAN_ARG_COUNT = 0;
 // ARG_T STRUCT
 #define REQUIRED_ARG(type, name, ...) type name;
 #define OPTIONAL_ARG(type, name, ...) type name;
-#define BOOLEAN_ARG(name, ...) _Bool name;
+#define BOOLEAN_ARG(name, ...) int name;
 // Stores argument values
 typedef struct {
     #ifdef REQUIRED_ARGS
@@ -180,41 +193,65 @@ static inline int parse_args(int argc, char* argv[], args_t* args) {
         return 0;
     }
 
-    // Get required arguments
-    #ifdef REQUIRED_ARGS
-    #define REQUIRED_ARG(type, name, label, description, parser) args->name = (type) parser(argv[i++]);
-    int i = 1;
-    REQUIRED_ARGS
-    #undef REQUIRED_ARG
-    #endif
+    int required_args_parsed = 0;
 
-    // Get optional and boolean arguments
-    #define OPTIONAL_ARG(type, name, default, flag, label, description, formatter, parser) \
-    if (easyargs_strcmp(argv[i], flag)) { \
-        if (i + 1 >= argc) { \
-            fprintf(stderr, "Error: option '%s' requires a value.\n", flag); \
-            return 0; \
-        } \
-        args->name = (type) parser(argv[++i]); \
-        continue; \
-    }
+    // Parse arguments
+    for (int i=1; i<argc; i++) {
+        char *arg = argv[i];
 
-    #define BOOLEAN_ARG(name, flag, description) \
-    if (easyargs_strcmp(argv[i], flag)) { \
-        args->name = 1; \
-        continue; \
-    }
-
-    for (int i = 1 + REQUIRED_ARG_COUNT; i < argc; i++) {
         #ifdef OPTIONAL_ARGS
-        OPTIONAL_ARGS
+        if (easyargs_str_starts_with(arg, OPTIONAL_ARG_FLAG_PREFIX)) {
+            // Arg is optional
+
+            // Get optional argument value
+            #define OPTIONAL_ARG(type, name, default, flag, label, description, formatter, parser) \
+            if (easyargs_strcmp(arg, flag)) { \
+                if (i + 1 >= argc) { \
+                    fprintf(stderr, "Error: option '%s' requires a value.\n", flag); \
+                    return 0; \
+                } \
+                args->name = (type) parser(argv[++i]); \
+                continue; \
+            }
+
+            OPTIONAL_ARGS
+       
+            // Unknown optional argument flag
+            fprintf(stderr, "Error: Unknown argument flag '%s'\n", arg);
+            return 0;
+
+            #undef OPTIONAL_ARG
+        }
         #endif
 
         #ifdef BOOLEAN_ARGS
-        BOOLEAN_ARGS
+        if (easyargs_str_starts_with(arg, BOOLEAN_ARG_FLAG_PREFIX)) {
+            // Arg is boolean
+            // Get boolean arguments
+            #define BOOLEAN_ARG(name, flag, description) \
+            if (easyargs_strcmp(argv[i], flag)) { \
+                args->name = 1; \
+                continue; \
+            }
+
+            BOOLEAN_ARGS
+            
+            // Unknown boolean argument flag
+            fprintf(stderr, "Error: Unknown argument flag '%s'\n", arg);
+            return 0;
+
+            #undef BOOLEAN_ARG
+        }
         #endif
 
-        fprintf(stderr, "Warning: Ignoring invalid argument '%s'\n", argv[i]);
+        // Arg is a required arg
+        #ifdef REQUIRED_ARGS
+        #define REQUIRED_ARG(type, name, label, description, parser, index) case index: {args->name = (type) parser(arg); break;}
+        switch (required_args_parsed++) {
+            REQUIRED_ARGS
+        }
+        #undef REQUIRED_ARG
+        #endif
     }
 
     #undef OPTIONAL_ARG
