@@ -26,17 +26,12 @@ Check out ./examples to see some use cases!
 
 // Define optional arguments with defaults
 #define OPTIONAL_ARGS \
-    OPTIONAL_UINT_ARG(threads, 1, "t", "threads", "Number of threads to use")
+    OPTIONAL_UINT_ARG(threads, 1, "--t", "threads", "Number of threads to use")
 
 // Define boolean flags
 #define BOOLEAN_ARGS \
     BOOLEAN_ARG(help, "-h", "Show help")
 ```
-
-Dashes for optional arguments are automatically prepended to the flag name.
-
-I.e. An optional argument defined like this `OPTIONAL_UNIT_ARG(threads, 1, "t", "threads", "Number of threads to use")`
-will be refered to by --t <VALUE>
 
 ### 2. Include EasyArgs
 
@@ -104,9 +99,9 @@ Optional arguments have flags and default values:
 
 ```c
 #define OPTIONAL_ARGS \
-    OPTIONAL_INT_ARG(verbose, 0, "v", "level", "Verbosity level") \
-    OPTIONAL_STRING_ARG(config, "config.ini", "config", "file", "Configuration file") \
-    OPTIONAL_DOUBLE_ARG(factor, 1.5, "f", "factor", "Scaling factor", 2)
+    OPTIONAL_INT_ARG(verbose, 0, "-v", "level", "Verbosity level") \
+    OPTIONAL_STRING_ARG(config, "config.ini", "--config", "file", "Configuration file") \
+    OPTIONAL_DOUBLE_ARG(factor, 1.5, "-f", "factor", "Scaling factor", 2)
 ```
 
 **Note:** `OPTIONAL_FLOAT_ARG` and `OPTIONAL_DOUBLE_ARG` take an additional precision parameter for displaying defaults in help text.
@@ -123,6 +118,9 @@ Boolean flags toggle between true and false if present or missing, respectively:
     BOOLEAN_ARG(quiet, "-q", "Suppress all output") \
     BOOLEAN_ARG(force, "-force", "Force overwrite existing files")
 ```
+
+> **Note:** if two arguments are defined using the same flag then optional arguments gain priority over boolean arguments.
+If they are the same type of argument, then whichever if defined first has priority.
 
 ## Advanced Usage
 

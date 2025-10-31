@@ -30,23 +30,19 @@
 #define REQUIRED_DOUBLE_ARG(name, label, description) REQUIRED_ARG(double, name, label, description, atof, __COUNTER__)
 
 // OPTIONAL_ARG(type, name, default, flag, label, description, formatter, parser)
-#define OPTIONAL_ARG_FLAG_PREFIX "--"
-
-#define OPTIONAL_STRING_ARG(name, default, flag, label, description) OPTIONAL_ARG(char*, name, default, OPTIONAL_ARG_FLAG_PREFIX flag, label, description, "%s", )
-#define OPTIONAL_CHAR_ARG(name, default, flag, label, description) OPTIONAL_ARG(char, name, default, OPTIONAL_ARG_FLAG_PREFIX flag, label, description, "%c", parse_char)
-#define OPTIONAL_INT_ARG(name, default, flag, label, description) OPTIONAL_ARG(int, name, default, OPTIONAL_ARG_FLAG_PREFIX flag, label, description, "%d", atoi)
-#define OPTIONAL_UINT_ARG(name, default, flag, label, description) OPTIONAL_ARG(unsigned int, name, default, OPTIONAL_ARG_FLAG_PREFIX flag, label, description, "%u", atoi)
-#define OPTIONAL_LONG_ARG(name, default, flag, label, description) OPTIONAL_ARG(long, name, default, OPTIONAL_ARG_FLAG_PREFIX flag, label, description, "%ld", atol)
-#define OPTIONAL_ULONG_ARG(name, default, flag, label, description) OPTIONAL_ARG(unsigned long, name, default, OPTIONAL_ARG_FLAG_PREFIX flag, label, description, "%lu", parse_ul)
-#define OPTIONAL_LONG_LONG_ARG(name, default, flag, label, description) OPTIONAL_ARG(long long, name, default, OPTIONAL_ARG_FLAG_PREFIX flag, label, description, "%lld", atoll)
-#define OPTIONAL_ULONG_LONG_ARG(name, default, flag, label, description) OPTIONAL_ARG(unsigned long long, name, default, OPTIONAL_ARG_FLAG_PREFIX flag, label, description, "%llu", parse_ull)
-#define OPTIONAL_SIZE_ARG(name, default, flag, label, description) OPTIONAL_ARG(size_t, name, default, OPTIONAL_ARG_FLAG_PREFIX flag, label, description, "%zu", parse_ull)
-#define OPTIONAL_FLOAT_ARG(name, default, flag, label, description, precision) OPTIONAL_ARG(float, name, default, OPTIONAL_ARG_FLAG_PREFIX flag, label, description, "%." #precision "g", atof)
-#define OPTIONAL_DOUBLE_ARG(name, default, flag, label, description, precision) OPTIONAL_ARG(double, name, default, OPTIONAL_ARG_FLAG_PREFIX flag, label, description, "%." #precision "g", atof)
+#define OPTIONAL_STRING_ARG(name, default, flag, label, description) OPTIONAL_ARG(char*, name, default, flag, label, description, "%s", )
+#define OPTIONAL_CHAR_ARG(name, default, flag, label, description) OPTIONAL_ARG(char, name, default, flag, label, description, "%c", parse_char)
+#define OPTIONAL_INT_ARG(name, default, flag, label, description) OPTIONAL_ARG(int, name, default, flag, label, description, "%d", atoi)
+#define OPTIONAL_UINT_ARG(name, default, flag, label, description) OPTIONAL_ARG(unsigned int, name, default, flag, label, description, "%u", atoi)
+#define OPTIONAL_LONG_ARG(name, default, flag, label, description) OPTIONAL_ARG(long, name, default, flag, label, description, "%ld", atol)
+#define OPTIONAL_ULONG_ARG(name, default, flag, label, description) OPTIONAL_ARG(unsigned long, name, default, flag, label, description, "%lu", parse_ul)
+#define OPTIONAL_LONG_LONG_ARG(name, default, flag, label, description) OPTIONAL_ARG(long long, name, default, flag, label, description, "%lld", atoll)
+#define OPTIONAL_ULONG_LONG_ARG(name, default, flag, label, description) OPTIONAL_ARG(unsigned long long, name, default, flag, label, description, "%llu", parse_ull)
+#define OPTIONAL_SIZE_ARG(name, default, flag, label, description) OPTIONAL_ARG(size_t, name, default, flag, label, description, "%zu", parse_ull)
+#define OPTIONAL_FLOAT_ARG(name, default, flag, label, description, precision) OPTIONAL_ARG(float, name, default, flag, label, description, "%." #precision "g", atof)
+#define OPTIONAL_DOUBLE_ARG(name, default, flag, label, description, precision) OPTIONAL_ARG(double, name, default, flag, label, description, "%." #precision "g", atof)
 
 // BOOLEAN_ARG(name, flag, description)
-#define BOOLEAN_ARG_FLAG_PREFIX "-"
-
 
 // PARSERS
 static inline char parse_char(const char* text) {
@@ -200,48 +196,32 @@ static inline int parse_args(int argc, char* argv[], args_t* args) {
         char *arg = argv[i];
 
         #ifdef OPTIONAL_ARGS
-        if (easyargs_str_starts_with(arg, OPTIONAL_ARG_FLAG_PREFIX)) {
-            // Arg is optional
-
-            // Get optional argument value
-            #define OPTIONAL_ARG(type, name, default, flag, label, description, formatter, parser) \
-            if (easyargs_strcmp(arg, flag)) { \
-                if (i + 1 >= argc) { \
-                    fprintf(stderr, "Error: option '%s' requires a value.\n", flag); \
-                    return 0; \
-                } \
-                args->name = (type) parser(argv[++i]); \
-                continue; \
-            }
-
-            OPTIONAL_ARGS
-       
-            // Unknown optional argument flag
-            fprintf(stderr, "Error: Unknown argument flag '%s'\n", arg);
-            return 0;
-
-            #undef OPTIONAL_ARG
+        #define OPTIONAL_ARG(type, name, default, flag, label, description, formatter, parser) \
+        if (easyargs_strcmp(arg, flag)) { \
+            if (i + 1 >= argc) { \
+                fprintf(stderr, "Error: option '%s' requires a value.\n", flag); \
+                return 0; \
+            } \
+            args->name = (type) parser(argv[++i]); \
+            continue; \
         }
+
+        OPTIONAL_ARGS
+   
+        #undef OPTIONAL_ARG
         #endif
 
         #ifdef BOOLEAN_ARGS
-        if (easyargs_str_starts_with(arg, BOOLEAN_ARG_FLAG_PREFIX)) {
-            // Arg is boolean
-            // Get boolean arguments
-            #define BOOLEAN_ARG(name, flag, description) \
-            if (easyargs_strcmp(argv[i], flag)) { \
-                args->name = 1; \
-                continue; \
-            }
-
-            BOOLEAN_ARGS
-            
-            // Unknown boolean argument flag
-            fprintf(stderr, "Error: Unknown argument flag '%s'\n", arg);
-            return 0;
-
-            #undef BOOLEAN_ARG
+        // Get boolean arguments
+        #define BOOLEAN_ARG(name, flag, description) \
+        if (easyargs_strcmp(argv[i], flag)) { \
+            args->name = 1; \
+            continue; \
         }
+
+        BOOLEAN_ARGS
+
+        #undef BOOLEAN_ARG
         #endif
 
         // Arg is a required arg
